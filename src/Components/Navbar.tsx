@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { scroller } from "react-scroll";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
@@ -7,49 +7,55 @@ import { Button } from "@/components/ui/button";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === "/";
 
-  // Cierro el menú al cambiar de ruta
+  // Cerrar menú al cambiar de ruta
   useEffect(() => setOpen(false), [location.pathname]);
 
-  // Data sin tocar
+  // Bloquear scroll del body cuando el menú está abierto
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
   const navItems = [
     { name: "Inicio", to: "/" },
     { name: "Cursos", to: "/cursos" },
     { name: "Libro", to: "/libro" },
-    { name: "Material", to: "/material" },   // otra página
-    { name: "Contacto", to: "/contacto" },   // sección en home
+    { name: "Material", to: "/material" }, // página aparte
+    { name: "Contacto", to: "/contacto" },
   ];
 
-  // Scroll suave cuando estoy en "/"
+  // Rutas de navbar que son secciones en la home
+  const anchors: Record<string, "top" | "cursos" | "libro" | "contacto"> = {
+    "/": "top",
+    "/cursos": "cursos",
+    "/libro": "libro",
+    "/contacto": "contacto",
+  };
+
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     itemTo: string
   ) => {
-    if (!isHome) return; // fuera de home, navegar normal
-
-    // mapa de rutas -> id de sección
-    const mapAnchor: Record<string, string> = {
-      "/": "top",
-      "/cursos": "cursos",
-      "/libro": "libro",
-      "/contacto": "contacto", // 👈 agregado
-      // "/material": (no scrollea, es otra página)
-    };
-
-    const target = mapAnchor[itemTo];
-    if (!target) return;
+    const target = anchors[itemTo];
+    if (!target) return; // /material u otras rutas -> navegación normal
 
     e.preventDefault();
 
+    if (!isHome) {
+      // Fuera de la home: ir a "/" y luego scrollear (Home debe leer location.state.scrollTo)
+      navigate("/", { state: { scrollTo: target } });
+      setOpen(false);
+      return;
+    }
+
+    // En la home: scroll suave
     if (target === "top") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      scroller.scrollTo(target, {
-        smooth: true,
-        duration: 600,
-        offset: -80, // despega del header sticky
-      });
+      scroller.scrollTo(target, { smooth: true, duration: 600, offset: -80 });
     }
     setOpen(false);
   };
@@ -58,7 +64,7 @@ const Navbar = () => {
     <header className="sticky top-0 z-50">
       <nav className="backdrop-blur-md bg-black/80 border-b border-white/10 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          {/* Logo: vuelve arriba en home */}
+          {/* Logo */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -96,7 +102,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Mobile: botón */}
+          {/* Mobile button */}
           <button
             className="md:hidden text-white hover:text-gray-300 text-2xl"
             onClick={() => setOpen((v) => !v)}
@@ -108,46 +114,67 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Mobile: menú desplegable */}
+      {/* Mobile floating menu + backdrop */}
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-black/95 backdrop-blur-md px-6 py-4 space-y-4 text-white/90"
-          >
-            {navItems.map((item, i) => (
-              <motion.div
-                key={item.to}
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <Link
-                  to={item.to}
-                  className="block text-lg font-medium hover:text-white hover:shadow-[0_0_8px_#fff]"
-                  onClick={(e) => handleNavClick(e, item.to)}
-                >
-                  {item.name}
-                </Link>
-              </motion.div>
-            ))}
+          <>
+            {/* Backdrop clickeable */}
+            <motion.button
+              type="button"
+              aria-label="Cerrar menú"
+              className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+            />
 
-            <Button
-              asChild
-              className="w-full bg-white text-black font-bold rounded-lg shadow-[0_0_10px_rgba(255,255,255,0.6)] hover:bg-black hover:text-white hover:border hover:border-white hover:shadow-[0_0_15px_rgba(255,255,255,0.9)] transition"
+            {/* Panel flotante (debajo del navbar) */}
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="fixed z-50 md:hidden left-0 right-0 top-16
+                         bg-black/95 border-b border-white/10
+                         px-6 py-4 space-y-4 text-white/90"
+              role="dialog"
+              aria-modal="true"
             >
-              <a
-                href="https://www.youtube.com/@ProfesorSantiago"
-                target="_blank"
-                rel="noopener noreferrer"
+              {navItems.map((item, i) => (
+                <motion.div
+                  key={item.to}
+                  initial={{ x: -10, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.02 * i }}
+                >
+                  <Link
+                    to={item.to}
+                    className="block text-lg font-medium hover:text-white hover:shadow-[0_0_8px_#fff]"
+                    onClick={(e) => handleNavClick(e, item.to)}
+                  >
+                    {item.name}
+                  </Link>
+                </motion.div>
+              ))}
+
+              <Button
+                asChild
+                className="w-full bg-white text-black font-bold rounded-lg
+                           shadow-[0_0_10px_rgba(255,255,255,0.6)]
+                           hover:bg-black hover:text-white hover:border hover:border-white
+                           hover:shadow-[0_0_15px_rgba(255,255,255,0.9)] transition"
               >
-                Canal
-              </a>
-            </Button>
-          </motion.div>
+                <a
+                  href="https://www.youtube.com/@ProfesorSantiago"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Canal
+                </a>
+              </Button>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>
