@@ -4,8 +4,10 @@ import CursosSection from "@/components/Sections/Home/CursosSection";
 import LibroSection from "@/components/Sections/Home/LibroSection";
 import ContactSection from "@/components/Sections/Home/ContactSection";
 import ScrollToTop from "@/components/ScrollToTop";
+import usePageTitle from "@/hooks/usePageTitle";
 
 const Home = () => {
+  usePageTitle("Cursos, libros, materiales, videos y mucho más...");
   return (
     <>
       <ScrollToTop />

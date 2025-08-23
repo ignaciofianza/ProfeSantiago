@@ -3,8 +3,10 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { LuTerminal } from "react-icons/lu";
 import ScrollToTop from "@/components/ScrollToTop";
+import usePageTitle from "@/hooks/usePageTitle";
 
 const Err404 = () => {
+  usePageTitle("Ruta no encontrada");
   const navigate = useNavigate();
   const { pathname, search, hash } = useLocation();
   const path = `${pathname}${search}${hash}` || "/";

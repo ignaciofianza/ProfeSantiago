@@ -1,7 +1,9 @@
 import { motion } from "motion/react";
 import ScrollToTop from "@/components/ScrollToTop";
+import usePageTitle from "@/hooks/usePageTitle";
 
 const Material = () => {
+  usePageTitle("Apuntes y recursos educativos");
   return (
     <>
       <ScrollToTop />
