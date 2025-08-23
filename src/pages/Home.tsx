@@ -3,10 +3,12 @@ import RecentVideos from "@/components/Sections/Home/RecentVideos";
 import CursosSection from "@/components/Sections/Home/CursosSection";
 import LibroSection from "@/components/Sections/Home/LibroSection";
 import ContactSection from "@/components/Sections/Home/ContactSection";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const Home = () => {
   return (
     <>
+      <ScrollToTop />
       {/* HERO */}
       <HeroSection />
 
@@ -21,10 +23,7 @@ const Home = () => {
           </div>
           <div className="mt-6">
             {/* RECENT VIDEOS */}
-            <RecentVideos
-              channelId="UC-qOy02aIifNhM6eHMgZeuQ"
-              maxResults={3}
-            />
+            <RecentVideos channelId="UC-qOy02aIifNhM6eHMgZeuQ" maxResults={3} />
           </div>
 
           {/* BTN ver más videos */}
