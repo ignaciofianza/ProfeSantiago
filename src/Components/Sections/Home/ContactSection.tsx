@@ -30,13 +30,23 @@ export function ContactSection() {
             <CardContent className="p-6">
               {/* Bloque del cafecito (título)*/}
               <h3 className="text-xl font-semibold flex items-center gap-2 text-white">
-                <LuCoffee /> Invitame un cafecito
+                <LuCoffee /> Si te gusta el contenido puedes invitarme un
+                cafecito.
               </h3>
 
               {/* GIF CAFECITO CON LINK */}
-              <div className="mt-4 aspect-[16/9] w-full rounded-lg border border-white/10 bg-white/[0.06] grid place-content-center text-white/60">
-                <span>💡 Acá va tu GIF</span>
-              </div>
+              <a
+                href="https://buymeacoffee.com/profesantiago"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 block aspect-[16/9] w-full rounded-lg border border-white/10 overflow-hidden"
+              >
+                <img
+                  src="/images/cafecito.gif"
+                  alt="Invitame un cafecito"
+                  className="h-full w-full object-cover"
+                />
+              </a>
 
               {/* Contacto directo con mailto */}
               <div className="mt-6 space-y-2">
