@@ -25,6 +25,7 @@ import {
   HardDrive,
 } from "lucide-react";
 import usePageTitle from "@/hooks/usePageTitle";
+import ScrollToTop from "@/components/ScrollToTop";
 
 /* ===================== Tipos ===================== */
 type FileNode = { type: "file"; name: string; url: string };
@@ -448,196 +449,199 @@ export default function MaterialesPage() {
   const currentTitle =
     path.length === 0 ? "Materiales" : path.map((d) => d.name).join(" / ");
 
-
   usePageTitle("Archivo de materiales");
   return (
-    <div className="min-h-screen bg-black text-gray-100">
-      {/* HERO oscuro minimal */}
-      <section className="relative overflow-hidden">
-        <div className="relative px-6 pt-20 pb-10 max-w-7xl mx-auto">
-          <motion.h1
-            className="text-4xl sm:text-5xl font-extrabold tracking-tight"
-            initial={{ y: -22, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-          >
-            {currentTitle}
-          </motion.h1>
+    <>
+      <ScrollToTop />
+      <div className="min-h-screen bg-black text-gray-100">
+        {/* HERO oscuro minimal */}
+        <section className="relative overflow-hidden">
+          <div className="relative px-6 pt-20 pb-10 max-w-7xl mx-auto">
+            <motion.h1
+              className="text-4xl sm:text-5xl font-extrabold tracking-tight"
+              initial={{ y: -22, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+            >
+              {currentTitle}
+            </motion.h1>
 
-          <motion.div
-            className="mt-3 text-white/70 max-w-2xl"
-            initial={{ y: -12, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.06 }}
-          >
-            <p>
-              Recursos organizados por carpeta. Click para navegar; los archivos
-              se abren en una nueva pestaña.
-            </p>
-            {manifest?.generatedAt && (
-              <span className="block mt-2 text-xs text-white/50">
-                Última actualización:{" "}
-                {new Date(manifest.generatedAt).toLocaleString("es-UY")}
-              </span>
-            )}
-          </motion.div>
-
-          {/* Breadcrumb + Back */}
-          <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-white/60">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={reset}
-                className="hover:text-white/90 transition"
-              >
-                /materiales
-              </button>
-              {path.map((p, i) => (
-                <span key={p.url} className="flex items-center gap-2">
-                  <span>/</span>
-                  <button
-                    onClick={() => setPath(path.slice(0, i + 1))}
-                    className="hover:text-white/90 transition"
-                    title={`Ir a ${p.name}`}
-                  >
-                    {p.name}
-                  </button>
+            <motion.div
+              className="mt-3 text-white/70 max-w-2xl"
+              initial={{ y: -12, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.06 }}
+            >
+              <p>
+                Recursos organizados por carpeta. Click para navegar; los
+                archivos se abren en una nueva pestaña.
+              </p>
+              {manifest?.generatedAt && (
+                <span className="block mt-2 text-xs text-white/50">
+                  Última actualización:{" "}
+                  {new Date(manifest.generatedAt).toLocaleString("es-UY")}
                 </span>
+              )}
+            </motion.div>
+
+            {/* Breadcrumb + Back */}
+            <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-white/60">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={reset}
+                  className="hover:text-white/90 transition"
+                >
+                  /materiales
+                </button>
+                {path.map((p, i) => (
+                  <span key={p.url} className="flex items-center gap-2">
+                    <span>/</span>
+                    <button
+                      onClick={() => setPath(path.slice(0, i + 1))}
+                      className="hover:text-white/90 transition"
+                      title={`Ir a ${p.name}`}
+                    >
+                      {p.name}
+                    </button>
+                  </span>
+                ))}
+              </div>
+
+              {path.length > 0 && (
+                <button
+                  onClick={back}
+                  className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 hover:bg-white/7 transition"
+                >
+                  <ArrowLeft size={16} /> Volver
+                </button>
+              )}
+            </div>
+
+            {/* Buscador + contadores */}
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <div className="relative">
+                <Search
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
+                />
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Buscar en esta carpeta…"
+                  className="w-72 rounded-md border border-white/10 bg-white/5 pl-9 pr-3 py-2 text-sm placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                  aria-label="Buscar materiales en carpeta actual"
+                />
+              </div>
+              <div className="text-xs text-white/50">
+                Carpetas ({dirs.length}/{counts.dirs}) · Archivos (
+                {files.length}/{counts.files}) · Total ({filtered.length}/
+                {counts.total})
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Contenido */}
+        <main className="px-6 pb-16 max-w-7xl mx-auto">
+          {/* Error */}
+          {error && (
+            <div className="mb-8 rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200 flex items-center justify-between gap-3">
+              <span>{error}</span>
+              <button
+                onClick={async () => {
+                  try {
+                    setError(null);
+                    const r = await fetch("/materiales.manifest.json", {
+                      cache: "no-store",
+                    });
+                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                    const data = (await r.json()) as Manifest;
+                    setManifest(data);
+                  } catch (e) {
+                    const msg = e instanceof Error ? e.message : String(e);
+                    setError(`No pude cargar el manifest: ${msg}`);
+                  }
+                }}
+                className="rounded-md border border-red-500/30 bg-red-500/20 px-3 py-1 hover:bg-red-500/30 transition"
+              >
+                Reintentar
+              </button>
+            </div>
+          )}
+
+          {/* Skeleton */}
+          {!manifest && !error && (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-24 rounded-xl border border-white/10 bg-white/4 animate-pulse"
+                />
               ))}
             </div>
+          )}
 
-            {path.length > 0 && (
-              <button
-                onClick={back}
-                className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 hover:bg-white/7 transition"
-              >
-                <ArrowLeft size={16} /> Volver
-              </button>
-            )}
-          </div>
-
-          {/* Buscador + contadores */}
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <div className="relative">
-              <Search
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"
-              />
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Buscar en esta carpeta…"
-                className="w-72 rounded-md border border-white/10 bg-white/5 pl-9 pr-3 py-2 text-sm placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-                aria-label="Buscar materiales en carpeta actual"
-              />
+          {/* Empty (tras filtrar) */}
+          {manifest && filtered.length === 0 && (
+            <div className="rounded-xl border border-white/10 bg-white/4 p-8 text-center text-white/70">
+              {q
+                ? "No hay resultados para tu búsqueda en esta carpeta."
+                : "No hay elementos en esta carpeta."}
             </div>
-            <div className="text-xs text-white/50">
-              Carpetas ({dirs.length}/{counts.dirs}) · Archivos ({files.length}/
-              {counts.files}) · Total ({filtered.length}/{counts.total})
-            </div>
-          </div>
-        </div>
-      </section>
+          )}
 
-      {/* Contenido */}
-      <main className="px-6 pb-16 max-w-7xl mx-auto">
-        {/* Error */}
-        {error && (
-          <div className="mb-8 rounded-md border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200 flex items-center justify-between gap-3">
-            <span>{error}</span>
-            <button
-              onClick={async () => {
-                try {
-                  setError(null);
-                  const r = await fetch("/materiales.manifest.json", {
-                    cache: "no-store",
-                  });
-                  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-                  const data = (await r.json()) as Manifest;
-                  setManifest(data);
-                } catch (e) {
-                  const msg = e instanceof Error ? e.message : String(e);
-                  setError(`No pude cargar el manifest: ${msg}`);
-                }
-              }}
-              className="rounded-md border border-red-500/30 bg-red-500/20 px-3 py-1 hover:bg-red-500/30 transition"
-            >
-              Reintentar
-            </button>
-          </div>
-        )}
-
-        {/* Skeleton */}
-        {!manifest && !error && (
+          {/* Grid */}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-24 rounded-xl border border-white/10 bg-white/4 animate-pulse"
-              />
-            ))}
+            <AnimatePresence>
+              {dirs.map((dir, idx) => (
+                <motion.button
+                  key={dir.url}
+                  role="button"
+                  aria-label={`Abrir carpeta ${dir.name}`}
+                  tabIndex={0}
+                  onKeyDown={(e) =>
+                    (e.key === "Enter" || e.key === " ") && goDir(dir)
+                  }
+                  onClick={() => goDir(dir)}
+                  className="group text-left p-5 rounded-xl border border-white/10 bg-white/4 hover:bg-white/6 hover:border-blue-500 transition flex items-center gap-4"
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.28, delay: idx * 0.02 }}
+                  title={dir.name}
+                >
+                  <Folder className="text-blue-400" size={30} />
+                  <div className="min-w-0">
+                    <div className="font-semibold truncate">{dir.name}</div>
+                    <div className="text-xs text-white/60">Carpeta</div>
+                  </div>
+                </motion.button>
+              ))}
+
+              {files.map((file, idx) => (
+                <motion.a
+                  key={file.url}
+                  href={file.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Abrir archivo ${file.name}`}
+                  title={file.name}
+                  className="group p-5 rounded-xl border border-white/10 bg-white/4 hover:bg-white/6 hover:border-green-500 transition flex items-center gap-4"
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.28, delay: idx * 0.02 }}
+                >
+                  <FileIcon name={file.name} />
+                  <div className="min-w-0">
+                    <div className="font-medium truncate">{file.name}</div>
+                    <div className="text-xs text-white/60">Archivo</div>
+                  </div>
+                </motion.a>
+              ))}
+            </AnimatePresence>
           </div>
-        )}
-
-        {/* Empty (tras filtrar) */}
-        {manifest && filtered.length === 0 && (
-          <div className="rounded-xl border border-white/10 bg-white/4 p-8 text-center text-white/70">
-            {q
-              ? "No hay resultados para tu búsqueda en esta carpeta."
-              : "No hay elementos en esta carpeta."}
-          </div>
-        )}
-
-        {/* Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <AnimatePresence>
-            {dirs.map((dir, idx) => (
-              <motion.button
-                key={dir.url}
-                role="button"
-                aria-label={`Abrir carpeta ${dir.name}`}
-                tabIndex={0}
-                onKeyDown={(e) =>
-                  (e.key === "Enter" || e.key === " ") && goDir(dir)
-                }
-                onClick={() => goDir(dir)}
-                className="group text-left p-5 rounded-xl border border-white/10 bg-white/4 hover:bg-white/6 hover:border-blue-500 transition flex items-center gap-4"
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.28, delay: idx * 0.02 }}
-                title={dir.name}
-              >
-                <Folder className="text-blue-400" size={30} />
-                <div className="min-w-0">
-                  <div className="font-semibold truncate">{dir.name}</div>
-                  <div className="text-xs text-white/60">Carpeta</div>
-                </div>
-              </motion.button>
-            ))}
-
-            {files.map((file, idx) => (
-              <motion.a
-                key={file.url}
-                href={file.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Abrir archivo ${file.name}`}
-                title={file.name}
-                className="group p-5 rounded-xl border border-white/10 bg-white/4 hover:bg-white/6 hover:border-green-500 transition flex items-center gap-4"
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.28, delay: idx * 0.02 }}
-              >
-                <FileIcon name={file.name} />
-                <div className="min-w-0">
-                  <div className="font-medium truncate">{file.name}</div>
-                  <div className="text-xs text-white/60">Archivo</div>
-                </div>
-              </motion.a>
-            ))}
-          </AnimatePresence>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 }
