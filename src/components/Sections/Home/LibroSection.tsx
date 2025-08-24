@@ -23,13 +23,28 @@ const LibroSection = () => {
         >
           {/* Contenedor con proporción fija */}
           <div className="w-full max-w-sm aspect-[3/4] rounded-xl border border-white/10 bg-white/[0.04] overflow-hidden">
-            <img
-              src="/images/libro.png"
-              alt="Portada del libro: Soporte de equipos informáticos"
-              className="h-full w-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
+            <picture>
+              <source
+                type="image/avif"
+                srcSet="/images/optimized/libro-1280.avif 1280w, /images/optimized/libro-1920.avif 1920w, /images/optimized/libro-2560.avif 2560w"
+                sizes="(min-width:1024px) 24rem, 90vw"
+              />
+              <source
+                type="image/webp"
+                srcSet="/images/optimized/libro-1280.webp 1280w, /images/optimized/libro-1920.webp 1920w, /images/optimized/libro-2560.webp 2560w"
+                sizes="(min-width:1024px) 24rem, 90vw"
+              />
+              <img
+                className="h-full w-full object-cover"
+                src="/images/optimized/libro-1280.jpg"
+                srcSet="/images/optimized/libro-1280.jpg 1280w, /images/optimized/libro-1920.jpg 1920w, /images/optimized/libro-2560.jpg 2560w"
+                sizes="(min-width:1024px) 24rem, 90vw"
+                alt="Portada del libro: Soporte de equipos informáticos"
+                loading="eager"
+                decoding="sync"
+                fetchPriority="high"
+              />
+            </picture>
           </div>
         </motion.div>
 
