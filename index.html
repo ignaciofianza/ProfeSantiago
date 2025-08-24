@@ -1,21 +1,86 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <!--! NOINDEX, ELIMINAR CUANDO SE HAGA DEPLOY FINAL Y DEFINITIVO -->
-    <meta name="robots" content="noindex">
-    <!--! NOFOLLOW, ELIMINAR CUANDO SE HAGA DEPLOY FINAL Y DEFINITIVO -->
-    <meta name="robots" content="nofollow">
-    <!--! NOARCHIVE, ELIMINAR CUANDO SE HAGA DEPLOY FINAL Y DEFINITIVO -->
-    <meta name="robots" content="noarchive">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <!-- STAGING: NO FINAL NI DEFINITIVO -->
+    <meta name="robots" content="noindex,nofollow,noarchive" />
+    <!-- <meta name="robots" content="index,follow,max-image-preview:large" /> -->
+
+    <!-- SEO base -->
+    <title>ProfeSantiago</title>
+    <meta
+      name="description"
+      content="Cursos gratis, libros y materiales de clase para aprender más rápido y mejor."
+    />
+    <link rel="canonical" href="https://profesantiago.com/" />
+
+    <!-- Theming -->
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#ffffff"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#000000"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_UY" />
+    <meta property="og:site_name" content="ProfeSantiago" />
+    <meta property="og:title" content="ProfeSantiago" />
+    <meta
+      property="og:description"
+      content="Cursos gratis, libros y materiales de clase para aprender más rápido y mejor."
+    />
+    <meta property="og:url" content="https://profesantiago.com/" />
+    <meta property="og:image" content="/images/og-default.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ProfeSantiago" />
+    <meta
+      name="twitter:description"
+      content="Cursos gratis, libros y materiales de clase para aprender más rápido y mejor."
+    />
+    <meta name="twitter:image" content="/images/og-default.jpg" />
+
+    <!-- Icons / PWA -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/icons/favicon-16x16.png"
+    />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <!-- Si tenés estos archivos, descomentá:
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#000000" />
+    -->
+    <meta name="msapplication-TileColor" content="#000000" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Fonts opcionales -->
     <link
       href="https://fonts.googleapis.com/css2?family=Koulen&display=swap"
       rel="stylesheet"
     />
-    <title>ProfeSantiago</title>
   </head>
   <body>
     <div id="root"></div>

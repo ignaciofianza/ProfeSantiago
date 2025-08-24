@@ -24,6 +24,7 @@ import {
   Disc,
   HardDrive,
 } from "lucide-react";
+import usePageTitle from "@/hooks/usePageTitle";
 
 /* ===================== Tipos ===================== */
 type FileNode = { type: "file"; name: string; url: string };
@@ -358,7 +359,7 @@ function FileIcon({ name }: { name: string }) {
     />
   );
 }
-  
+
 /* ===================== Página ===================== */
 export default function MaterialesPage() {
   const [manifest, setManifest] = useState<Manifest | null>(null);
@@ -447,6 +448,8 @@ export default function MaterialesPage() {
   const currentTitle =
     path.length === 0 ? "Materiales" : path.map((d) => d.name).join(" / ");
 
+
+  usePageTitle("Archivo de materiales");
   return (
     <div className="min-h-screen bg-black text-gray-100">
       {/* HERO oscuro minimal */}
